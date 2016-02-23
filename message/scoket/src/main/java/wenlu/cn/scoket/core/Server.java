@@ -4,6 +4,13 @@ import java.io.DataInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.bson.Document;
+
+import com.mongodb.DB;
+import com.mongodb.client.MongoDatabase;
+
+import wenlu.cn.scoket.mongodb.MongoManager;
+
 public class Server {
 	public static final int PORT = 62701;
 	
@@ -25,6 +32,7 @@ public class Server {
   
     private class HandlerThread implements Runnable {  
         private Socket socket;  
+        private MongoDatabase db = MongoManager.getDB("message");
         public HandlerThread(Socket client) {  
             socket = client;  
             new Thread(this).start();  
@@ -34,9 +42,13 @@ public class Server {
             try {  
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 String clientInputStr = input.readUTF();
+                Document document = new Document();
+                document = Document.parse(clientInputStr);
+                db.getCollection("msg").insertOne(document);
                 System.out.println("getMsg:"+clientInputStr); 
                 input.close();  
             } catch (Exception e) {  
+            	
             } finally {  
                 if (socket != null) {  
                     try {  

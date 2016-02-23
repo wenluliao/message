@@ -1,14 +1,11 @@
 package wenlu.cn.scoket.core;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-
 import org.bson.types.ObjectId;
-
 import wenlu.cn.beans.base.Msg;
 
 public class Client {
@@ -30,6 +27,7 @@ public class Client {
 	            out.writeUTF(msg.toString());  
 	            out.close();
         	} catch (Exception e) {
+        		
         	} finally {
         		if (socket != null) {
         			try {
