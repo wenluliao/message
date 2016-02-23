@@ -1,9 +1,6 @@
 package wenlu.cn.scoket.core;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -37,11 +34,7 @@ public class Server {
             try {  
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 String clientInputStr = input.readUTF();
-                DataOutputStream out = new DataOutputStream(socket.getOutputStream());  
-                String s = new BufferedReader(new InputStreamReader(System.in)).readLine();  
-                out.writeUTF(s);  
-                
-                out.close();  
+                System.out.println("getMsg:"+clientInputStr); 
                 input.close();  
             } catch (Exception e) {  
             } finally {  
