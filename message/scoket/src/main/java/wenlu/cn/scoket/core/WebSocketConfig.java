@@ -9,8 +9,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import com.th.scada.real.controller.RealSocketHandler;
-
 /**
  * Spring框架WebSocket配置管理类
  * @author guoyankun
@@ -26,7 +24,7 @@ public class WebSocketConfig extends WebMvcConfigurerAdapter implements
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		// 注册多个websocket服务，addHandler第一个参数是websocket的具体业务处理类，第二个参数collectionList相当于endpoint
-		registry.addHandler(RealSocketHandler(), "/collectionList").addInterceptors(new WebSocketHandshakeInterceptor());
+//		registry.addHandler(RealSocketHandler(), "/collectionList").addInterceptors(new WebSocketHandshakeInterceptor());
 		// 可以注册多个websocket的endpoint
 	}
 	@Bean
