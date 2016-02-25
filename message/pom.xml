@@ -83,6 +83,11 @@
 				<artifactId>spring-websocket</artifactId>
 				<version>4.2.4.RELEASE</version>
 			</dependency>
+			<dependency>
+				<groupId>tomcat</groupId>
+				<artifactId>servlet</artifactId>
+				<version>4.1.36</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<packaging>pom</packaging>

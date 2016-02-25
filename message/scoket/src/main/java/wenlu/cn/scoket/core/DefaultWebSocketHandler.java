@@ -10,9 +10,9 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-public class RealSocketHandler implements WebSocketHandler {
+public class DefaultWebSocketHandler implements WebSocketHandler {
 	private static final ArrayList<WebSocketSession> users = new ArrayList<WebSocketSession>();
-	private static Logger logger = Logger.getLogger(RealSocketHandler.class);
+	private static Logger logger = Logger.getLogger(WebSocketHandler.class);
 
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus arg1) throws Exception {

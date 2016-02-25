@@ -2,33 +2,32 @@ package wenlu.cn.scoket.core;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.web.socket.server.HandshakeInterceptor;
 
 /**
  * Spring框架WebSocket配置管理类
- * @author guoyankun
  */
 @Configuration
-@EnableWebMvc
 @EnableWebSocket
-public class WebSocketConfig extends WebMvcConfigurerAdapter implements
-		WebSocketConfigurer {
-	/**
-	 * 注册websocket
-	 */
+public class WebSocketConfig implements WebSocketConfigurer {
+
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		// 注册多个websocket服务，addHandler第一个参数是websocket的具体业务处理类，第二个参数collectionList相当于endpoint
-//		registry.addHandler(RealSocketHandler(), "/collectionList").addInterceptors(new WebSocketHandshakeInterceptor());
-		// 可以注册多个websocket的endpoint
+		registry.addHandler(myhandler(), "/websocket").addInterceptors(myInterceptors()).setAllowedOrigins("*");
+		registry.addHandler(myhandler(), "/sockjs/websocket").addInterceptors(myInterceptors()).withSockJS();
 	}
+
 	@Bean
-	public WebSocketHandler RealSocketHandler() {
-		return new RealSocketHandler();
+	public WebSocketHandler myhandler() {
+		return new DefaultWebSocketHandler();
+	}
+
+	@Bean
+	public HandshakeInterceptor myInterceptors() {
+		return new WebSocketHandshakeInterceptor();
 	}
 }
