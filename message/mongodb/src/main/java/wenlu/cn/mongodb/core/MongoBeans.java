@@ -1,9 +1,11 @@
 package wenlu.cn.mongodb.core;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import java.util.function.Predicate;
 import org.bson.types.ObjectId;
 
 
@@ -157,32 +159,32 @@ public class MongoBeans {
 	 */
 	public MongoBeans(OperateType operateType,BasicDBObject map){
 		//jre 1.7以上支持
-//		switch (operateType.getOperateType()) {
-//		case "insert":
-//			this.disposeDataInsert(map);
-//			break;
-//		case "update":
-//			this.disposeDataUpdate(map);
-//			break;
-//		case "remove":
-//			
-//			break;
-//		case "search":
-//			this.disposeDataSearch(map);
-//			break;
-//		default:
-//			break;
-//		} 
-		String type = operateType.getOperateType();
-		if("insert".equals(type)){
+		switch (operateType.getOperateType()) {
+		case "insert":
 			this.disposeDataInsert(map);
-		}else if("update".equals(type)){
+			break;
+		case "update":
 			this.disposeDataUpdate(map);
-		}else if("remove".equals(type)){
+			break;
+		case "remove":
 			this.disposeDataSearch(map);
-		}else{
+			break;
+		case "search":
 			this.disposeDataSearch(map);
-		}
+			break;
+		default:
+			break;
+		} 
+//		String type = operateType.getOperateType();
+//		if("insert".equals(type)){
+//			this.disposeDataInsert(map);
+//		}else if("update".equals(type)){
+//			this.disposeDataUpdate(map);
+//		}else if("remove".equals(type)){
+//			this.disposeDataSearch(map);
+//		}else{
+//			this.disposeDataSearch(map);
+//		}
 		
 	}
 	
@@ -233,7 +235,7 @@ public class MongoBeans {
 	}
 	
 	/**
-	 * explain 处理查询数据，bms项目定制
+	 * explain 处理查询数据
 	 * @param map
 	 * @author lwl
 	 * Date 2014年7月15日  Time 上午11:11:42
@@ -247,13 +249,15 @@ public class MongoBeans {
 		//处理模糊查询
 		if(map.containsField("likecolumn") && map.get("likecolumn") != null && !"".equals(map.get("likecolumn").toString())){
 			columns = map.get("likecolumn").toString().split(",");
-			map.remove("likecolumn");
-		}else map.remove("likecolumn");
+		}
+		map.remove("likecolumn");
+		
 		//处理并集查询
 		if(map.containsField("orcolumn") && map.get("orcolumn") != null && !"".equals(map.get("orcolumn").toString())){
 			orColumns = map.get("orcolumn").toString().split(",");
-			map.remove("orcolumn");
-		}else map.remove("orcolumn");
+		}
+		map.remove("orcolumn");
+		
 		//获得分页对象
 		if(map.containsField("page") && map.containsField("rows")){
 			if(map.get("page") instanceof String)this.pageObj = new MongoPage(Integer.parseInt(map.get("page").toString()),Integer.parseInt(map.get("rows").toString()));
@@ -267,12 +271,11 @@ public class MongoBeans {
 			orderObj = new BasicDBObject();		//初始化排序存储对象
 			String valuestr = map.getString("sort");	//获取排序字段
 			String[] values = valuestr.split(",");
-			for (int i = 0; i < values.length; i++) {
-				String value = values[i];
+			Arrays.stream(values).forEach((value) -> {
 				String order = value.substring(0,1);	//获取排序方式
-		    	String filed = value.substring(1, value.length());	//获取需要排序的列名
-		    	orderObj.put(filed, "+".equals(order)?1:-1);	//开头为+的是顺序，-的是倒序。李必琪制定的规则
-			}
+				String filed = value.substring(1, value.length());//获取需要排序的列名
+				orderObj.put(filed, "+".equals(order)?1:-1);//开头为+的是顺序，-的是倒序。约定规则
+			});
 	    	map.remove("sort");
 		}else orderObj = new BasicDBObject();
 		
@@ -330,7 +333,7 @@ public class MongoBeans {
 	}
 	
 	/**
-	 * explain 处理新增数据，bms项目定制 
+	 * explain 处理新增数据 
 	 * @param map
 	 * @author lwl
 	 * Date 2014年7月15日  Time 下午10:02:36
@@ -340,7 +343,7 @@ public class MongoBeans {
 	}
 	
 	/**
-	 * explain 处理更新数据，bms项目定制
+	 * explain 处理更新数据 
 	 * @param map
 	 * @author lwl
 	 * Date 2014年7月15日  Time 下午9:54:04
@@ -366,7 +369,8 @@ public class MongoBeans {
 	}
 	
 	public static void main(String[] args) {
-		OperateType remove = OperateType.insert;
-		System.out.println(remove.getOperateType()+"====="+remove.getOperateType().toString().substring(0,1));
+		BasicDBObject obj = new BasicDBObject().append("a", 1).append("b", 2).append("c", 3);
+		obj.append("d", new BasicDBObject("dd", "ddd"));
+		System.out.println(obj.get("d.dd"));
 	}
 }
