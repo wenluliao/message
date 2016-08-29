@@ -18,6 +18,9 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.MongoException;
 import com.mongodb.ServerAddress;
+import com.mongodb.WriteConcern;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.MongoClientOptions.Builder;
 
 /**
  * explain mongo实例
@@ -38,6 +41,7 @@ public class MongoManager {
 	 * @author lwl
 	 * Date 2014年7月9日  Time 上午11:24:35
 	 */
+	@Deprecated
 	public static DB getDB(String dbName) {
 		if (mongoClient == null) {
 			init();
@@ -51,11 +55,39 @@ public class MongoManager {
 	 * @author lwl
 	 * Date 2014年7月15日  Time 下午5:06:58
 	 */
+	@Deprecated
 	public static DB getDB() {
 		if (mongoClient == null) {
 			init();
 		}
 		return mongoClient.getDB(MongoConfig.get("defaultDB"));
+	}
+	
+	/**
+	 * explain 获取一个指定数据库的连接对象
+	 * @param dbName
+	 * @return
+	 * @author lwl
+	 * Date 2014年7月9日  Time 上午11:24:35
+	 */
+	public static MongoDatabase getDatabase(String dbName) {
+		if (mongoClient == null) {
+			init();
+		}
+		return mongoClient.getDatabase(dbName);
+	}
+	
+	/**
+	 * explain 初始化数据连接，检验是否认真
+	 * @return
+	 * @author lwl
+	 * Date 2014年7月15日  Time 下午5:06:58
+	 */
+	public static MongoDatabase getDatabase() {
+		if (mongoClient == null) {
+			init();
+		}
+		return mongoClient.getDatabase(MongoConfig.get("defaultDB"));
 	}
 	
 	/**
@@ -95,26 +127,25 @@ public class MongoManager {
 		String host = MongoConfig.get("host");	//访问地址
 
 		try {
-			List<MongoCredential> auths = getAuths();
-			if(auths != null)mongoClient=new MongoClient(getHost(host),getAuths());		//设置需要访问的数据库实例以及各个数据库的认证用户
-			else mongoClient=new MongoClient(getHost(host));
+			Builder build = new MongoClientOptions.Builder();
 			MongoClientOptions opt = mongoClient.getMongoClientOptions();
-			opt.builder().connectionsPerHost(new Integer(MongoConfig.get("connectionsPerHost")));
-			opt.builder().minConnectionsPerHost(new Integer(MongoConfig.get("minConnectionsPerHost")));
-			opt.builder().threadsAllowedToBlockForConnectionMultiplier(new Integer(MongoConfig.get("threadsAllowedToBlockForConnectionMultiplier")));
-			opt.builder().maxWaitTime(new Integer(MongoConfig.get("maxWaitTime")));
-			opt.builder().maxConnectionIdleTime(new Integer(MongoConfig.get("maxConnectionIdleTime")));
-			opt.builder().maxConnectionLifeTime(new Integer(MongoConfig.get("maxConnectionLifeTime")));
-			opt.builder().socketTimeout(new Integer(MongoConfig.get("socketTimeout")));
-			opt.builder().socketKeepAlive(new Boolean(MongoConfig.get("socketKeepAlive")));
-			opt.builder().heartbeatFrequency(new Integer(MongoConfig.get("heartbeatFrequency")));
-//			opt.builder().heartbeatConnectRetryFrequency(new Integer(MongoConfig.get("heartbeatConnectRetryFrequency")));
-			opt.builder().heartbeatSocketTimeout(new Integer(MongoConfig.get("heartbeatSocketTimeout")));
-			opt.builder().heartbeatConnectTimeout(new Integer(MongoConfig.get("heartbeatConnectTimeout")));
-//			opt.builder().heartbeatThreadCount(new Integer(MongoConfig.get("heartbeatThreadCount")));
-//			opt.builder().acceptableLatencyDifference(new Integer(MongoConfig.get("acceptableLatencyDifference")));
-			opt.builder().requiredReplicaSetName(new String(MongoConfig.get("requiredReplicaSetName")));
-//			opt.builder().readPreference(ReadPreference.secondaryPreferred()); 	//查询读取方式，代码控制读写分离的方式（可在查询时自由选择。）
+			build.connectionsPerHost(new Integer(MongoConfig.get("connectionsPerHost")));
+			build.minConnectionsPerHost(new Integer(MongoConfig.get("minConnectionsPerHost")));
+			build.threadsAllowedToBlockForConnectionMultiplier(new Integer(MongoConfig.get("threadsAllowedToBlockForConnectionMultiplier")));
+			build.maxWaitTime(new Integer(MongoConfig.get("maxWaitTime")));
+			build.maxConnectionIdleTime(new Integer(MongoConfig.get("maxConnectionIdleTime")));
+			build.maxConnectionLifeTime(new Integer(MongoConfig.get("maxConnectionLifeTime")));
+			build.socketTimeout(new Integer(MongoConfig.get("socketTimeout")));
+			build.socketKeepAlive(new Boolean(MongoConfig.get("socketKeepAlive")));
+			build.heartbeatFrequency(new Integer(MongoConfig.get("heartbeatFrequency")));
+			build.heartbeatSocketTimeout(new Integer(MongoConfig.get("heartbeatSocketTimeout")));
+			build.heartbeatConnectTimeout(new Integer(MongoConfig.get("heartbeatConnectTimeout")));
+			build.requiredReplicaSetName(new String(MongoConfig.get("requiredReplicaSetName")));
+			build.writeConcern(WriteConcern.W1);
+//			build.readPreference(ReadPreference.secondaryPreferred()); 	//查询读取方式，代码控制读写分离的方式（可在查询时自由选择。）
+			List<MongoCredential> auths = getAuths();
+			if(auths != null)mongoClient=new MongoClient(getHost(host),getAuths(),opt);		//设置需要访问的数据库实例以及各个数据库的认证用户
+			else mongoClient=new MongoClient(getHost(host),opt);
 			log.info("mongo 初始化完成！");
 		} catch (UnknownHostException e) {
 			log.error("mongo 初始化失败！\n未知异常地址\t：\t\t"+host,e);
