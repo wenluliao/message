@@ -197,7 +197,7 @@ public class MongoManager {
 			List<Map> authInfos = JSONArray.parseArray(new String(MongoConfig.get("auths")), Map.class);
 			List<MongoCredential> credentialsList = new ArrayList<MongoCredential>();  
 			for (int i = 0; i < authInfos.size(); i++) {
-				credentialsList.add(MongoCredential.createMongoCRCredential(
+				credentialsList.add(MongoCredential.createCredential(
 						authInfos.get(i).get("username").toString(),
 						authInfos.get(i).get("dbname").toString(),
 						authInfos.get(i).get("password").toString().toCharArray()));
