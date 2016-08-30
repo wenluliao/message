@@ -128,7 +128,6 @@ public class MongoManager {
 
 		try {
 			Builder build = new MongoClientOptions.Builder();
-			MongoClientOptions opt = mongoClient.getMongoClientOptions();
 			build.connectionsPerHost(new Integer(MongoConfig.get("connectionsPerHost")));
 			build.minConnectionsPerHost(new Integer(MongoConfig.get("minConnectionsPerHost")));
 			build.threadsAllowedToBlockForConnectionMultiplier(new Integer(MongoConfig.get("threadsAllowedToBlockForConnectionMultiplier")));
@@ -141,8 +140,9 @@ public class MongoManager {
 			build.heartbeatSocketTimeout(new Integer(MongoConfig.get("heartbeatSocketTimeout")));
 			build.heartbeatConnectTimeout(new Integer(MongoConfig.get("heartbeatConnectTimeout")));
 			build.requiredReplicaSetName(new String(MongoConfig.get("requiredReplicaSetName")));
-			build.writeConcern(WriteConcern.W1);
+			build.writeConcern(WriteConcern.ACKNOWLEDGED);
 //			build.readPreference(ReadPreference.secondaryPreferred()); 	//查询读取方式，代码控制读写分离的方式（可在查询时自由选择。）
+			MongoClientOptions opt = build.build();
 			List<MongoCredential> auths = getAuths();
 			if(auths != null)mongoClient=new MongoClient(getHost(host),getAuths(),opt);		//设置需要访问的数据库实例以及各个数据库的认证用户
 			else mongoClient=new MongoClient(getHost(host),opt);
