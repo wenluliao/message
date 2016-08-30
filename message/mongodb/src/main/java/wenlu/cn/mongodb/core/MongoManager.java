@@ -139,8 +139,8 @@ public class MongoManager {
 			build.heartbeatFrequency(new Integer(MongoConfig.get("heartbeatFrequency")));
 			build.heartbeatSocketTimeout(new Integer(MongoConfig.get("heartbeatSocketTimeout")));
 			build.heartbeatConnectTimeout(new Integer(MongoConfig.get("heartbeatConnectTimeout")));
-			build.requiredReplicaSetName(new String(MongoConfig.get("requiredReplicaSetName")));
-			build.writeConcern(WriteConcern.ACKNOWLEDGED);
+//			build.requiredReplicaSetName(new String(MongoConfig.get("requiredReplicaSetName")));
+			build.writeConcern(WriteConcern.W1);
 //			build.readPreference(ReadPreference.secondaryPreferred()); 	//查询读取方式，代码控制读写分离的方式（可在查询时自由选择。）
 			MongoClientOptions opt = build.build();
 			List<MongoCredential> auths = getAuths();
